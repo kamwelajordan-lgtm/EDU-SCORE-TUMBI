@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDU-SCORE TUMBI</title>
+
+<style>
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  background:#f4f6f8;
+  color:#222;
+}
+header{
+  background:#1769aa;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:15px;
+}
+.card{
+  background:white;
+  padding:18px;
+  margin:15px 0;
+  border-radius:10px;
+  box-shadow:0 2px 8px #ccc;
+}
+input,select,button{
+  width:100%;
+  padding:11px;
+  margin:6px 0;
+  box-sizing:border-box;
+  border-radius:6px;
+  border:1px solid #bbb;
+}
+button{
+  background:#1769aa;
+  color:white;
+  border:0;
+  cursor:pointer;
+  font-weight:bold;
+}
+button:hover{background:#0d4f82}
+.danger{background:#c62828}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th,td{
+  border:1px solid #ddd;
+  padding:9px;
+  text-align:center;
+}
+th{
+  background:#1769aa;
+  color:white;
+}
+.stat{
+  display:inline-block;
+  background:#e3f2fd;
+  padding:15px;
+  margin:5px;
+  border-radius:8px;
+  min-width:120px;
+  text-align:center;
+}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>EDU-SCORE TUMBI</h1>
+<p>Mfumo wa Kusimamia Matokeo - Kata ya Tumbi</p>
+</header>
+
+<div class="container">
+
+<div id="login" class="card">
+<h2>🔐 Ingia kwenye Mfumo</h2>
+
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">INGIA</button>
+
+<p><b>Username:</b> admin</p>
+<p><b>Password:</b> 1234</p>
+</div>
+
+<div id="system" class="hidden">
+
+<div class="card">
+<h2>📊 Dashboard - Kata ya Tumbi</h2>
+
+<div class="stat">
+<b id="totalStudents">0</b><br>
+Wanafunzi
+</div>
+
+<div class="stat">
+<b id="totalSchools">3</b><br>
+Shule
+</div>
+
+<div class="stat">
+<b id="totalResults">0</b><br>
+Matokeo
+</div>
+
+<button onclick="logout()">TOKA</button>
+</div>
+
+<div class="card">
+<h2>👨‍🎓 Sajili Mwanafunzi</h2>
+
+<input id="studentName" placeholder="Jina kamili la mwanafunzi">
+
+<input id="studentNumber" placeholder="Namba ya mwanafunzi">
+
+<select id="school">
+<option value="">-- Chagua Shule --</option>
+<option>Farm Nyamwezi Primary School</option>
+<option>Kipera Primary School</option>
+<option>Itema Primary School</option>
+<option>Iyombo Primary School</option>
+</select>
+
+<select id="className">
+<option>Darasa la Nne</option>
+<option>Darasa la Saba</option>
+</select>
+
+<button onclick="addStudent()">SAJILI MWANAFUNZI</button>
+</div>
+
+<div class="card">
+<h2>✍️ Ingiza Alama</h2>
+
+<select id="markStudent"></select>
+
+<input id="kiswahili" type="number" min="0" max="100" placeholder="Kiswahili">
+<input id="english" type="number" min="0" max="100" placeholder="English">
+<input id="math" type="number" min="0" max="100" placeholder="Hisabati">
+<input id="science" type="number" min="0" max="100" placeholder="Sayansi">
+<input id="social" type="number" min="0" max="100" placeholder="Maarifa ya Jamii">
+
+<button onclick="saveMarks()">HIFADHI ALAMA</button>
+</div>
+
+<div class="card">
+<h2>📋 Matokeo</h2>
+
+<select id="filterSchool" onchange="showResults()">
+<option value="">Shule zote</option>
+<option>Farm Nyamwezi Primary School</option>
+<option>Kipera Primary School</option>
+<option>Itema Primary School</option>
+<option>Iyombo Primary School</option>
+</select>
+
+<table>
+<thead>
+<tr>
+<th>Nafasi</th>
+<th>Namba</th>
+<th>Jina</th>
+<th>Shule</th>
+<th>Jumla</th>
+<th>Wastani</th>
+<th>Daraja</th>
+</tr>
+</thead>
+
+<tbody id="results"></tbody>
+</table>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let students = JSON.parse(localStorage.getItem("tumbiStudents") || "[]");
+
+function login(){
+
+let user=document.getElementById("username").value;
+let pass=document.getElementById("password").value;
+
+if(user==="admin" && pass==="1234"){
+
+document.getElementById("login").classList.add("hidden");
+document.getElementById("system").classList.remove("hidden");
+
+updateAll();
+
+}else{
+alert("Username au Password si sahihi.");
+}
+
+}
+
+function logout(){
+location.reload();
+}
+
+function addStudent(){
+
+let name=document.getElementById("studentName").value.trim();
+let number=document.getElementById("studentNumber").value.trim();
+let school=document.getElementById("school").value;
+let cls=document.getElementById("className").value;
+
+if(!name || !number || !school){
+alert("Tafadhali jaza taarifa zote.");
+return;
+}
+
+students.push({
+id:Date.now(),
+name:name,
+number:number,
+school:school,
+className:cls,
+marks:{}
+});
+
+localStorage.setItem("tumbiStudents",JSON.stringify(students));
+
+alert("Mwanafunzi amesajiliwa kikamilifu.");
+
+document.getElementById("studentName").value="";
+document.getElementById("studentNumber").value="";
+document.getElementById("school").value="";
+
+updateAll();
+}
+
+function updateStudents(){
+
+let select=document.getElementById("markStudent");
+
+select.innerHTML='<option value="">-- Chagua mwanafunzi --</option>';
+
+students.forEach(s=>{
+select.innerHTML+=
+`<option value="${s.id}">${s.number} - ${s.name} (${s.school})</option>`;
+});
+
+}
+
+function saveMarks(){
+
+let id=document.getElementById("markStudent").value;
+
+if(!id){
+alert("Chagua mwanafunzi kwanza.");
+return;
+}
+
+let student=students.find(s=>s.id==id);
+
+student.marks={
+kiswahili:Number(document.getElementById("kiswahili").value)||0,
+english:Number(document.getElementById("english").value)||0,
+math:Number(document.getElementById("math").value)||0,
+science:Number(document.getElementById("science").value)||0,
+social:Number(document.getElementById("social").value)||0
+};
+
+localStorage.setItem("tumbiStudents",JSON.stringify(students));
+
+alert("Alama zimehifadhiwa.");
+
+showResults();
+}
+
+function grade(avg){
+
+if(avg>=75)return "A";
+if(avg>=60)return "B";
+if(avg>=45)return "C";
+if(avg>=30)return "D";
+return "F";
+
+}
+
+function showResults(){
+
+let school=document.getElementById("filterSchool").value;
+
+let list=students.filter(s=>!school || s.school===school);
+
+list=list.map(s=>{
+
+let m=s.marks||{};
+
+let total=(m.kiswahili||0)+(m.english||0)+(m.math||0)+
+(m.science||0)+(m.social||0);
+
+let avg=total/5;
+
+return {...s,total:total,avg:avg};
+
+});
+
+list.sort((a,b)=>b.total-a.total);
+
+let html="";
+
+list.forEach((s,index)=>{
+
+html+=`
+<tr>
+<td>${index+1}</td>
+<td>${s.number}</td>
+<td>${s.name}</td>
+<td>${s.school}</td>
+<td>${s.total}</td>
+<td>${s.avg.toFixed(2)}</td>
+<td>${grade(s.avg)}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("results").innerHTML=html;
+
+document.getElementById("totalResults").innerText=list.length;
+
+}
+
+function updateAll(){
+
+document.getElementById("totalStudents").innerText=students.length;
+
+document.getElementById("totalSchools").innerText=4;
+
+updateStudents();
+
+showResults();
+
+}
+
+</script>
+
+</body>
+</html>
