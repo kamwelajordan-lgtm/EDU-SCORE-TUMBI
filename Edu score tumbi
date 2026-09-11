@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduScore Tumbi</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #0b5ed7;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 28px;
+    }
+
+    header p {
+      margin-top: 5px;
+    }
+
+    nav {
+      background: white;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,.1);
+    }
+
+    nav button {
+      border: none;
+      padding: 10px 15px;
+      background: #e9ecef;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    nav button:hover {
+      background: #0b5ed7;
+      color: white;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 10px;
+    }
+
+    .section {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      margin-bottom: 20px;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    h2 {
+      color: #0b5ed7;
+      margin-bottom: 15px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .card h3 {
+      font-size: 28px;
+      margin-bottom: 5px;
+      color: #0b5ed7;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 5px;
+    }
+
+    button.primary {
+      background: #0b5ed7;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button.danger {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 9px;
+      text-align: center;
+    }
+
+    th {
+      background: #0b5ed7;
+      color: white;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    .search {
+      margin-bottom: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    @media(max-width:600px) {
+      header h1 {
+        font-size: 22px;
+      }
+
+      nav button {
+        flex: 1 1 45%;
+      }
+
+      .section {
+        padding: 15px;
+      }
+
+      th, td {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>EDU SCORE TUMBI</h1>
+  <p>Mfumo wa Usimamizi wa Wanafunzi na Matokeo</p>
+</header>
+
+<nav>
+  <button onclick="showSection('dashboard')">Dashboard</button>
+  <button onclick="showSection('studentForm')">Sajili Mwanafunzi</button>
+  <button onclick="showSection('students')">Wanafunzi</button>
+  <button onclick="showSection('marks')">Ingiza Alama</button>
+  <button onclick="showSection('results')">Matokeo</button>
+</nav>
+
+<div class="container">
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="section active">
+    <h2>Dashboard</h2>
+
+    <div class="cards">
+      <div class="card">
+        <h3 id="studentCount">0</h3>
+        <p>Wanafunzi</p>
+      </div>
+
+      <div class="card">
+        <h3 id="schoolCount">4</h3>
+        <p>Shule</p>
+      </div>
+
+      <div class="card">
+        <h3 id="marksCount">0</h3>
+        <p>Alama Zilizowekwa</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STUDENT FORM -->
+  <section id="studentForm" class="section">
+    <h2>Sajili Mwanafunzi</h2>
+
+    <form onsubmit="addStudent(event)">
+
+      <div>
+        <label>Jina Kamili</label>
+        <input id="studentName" required>
+      </div>
+
+      <div>
+        <label>Namba ya Mtihani</label>
+        <input id="examNumber" required>
+      </div>
+
+      <div>
+        <label>Darasa</label>
+        <select id="className" required>
+          <option value="">Chagua darasa</option>
+          <option>Darasa la I</option>
+          <option>Darasa la II</option>
+          <option>Darasa la III</option>
+          <option>Darasa la IV</option>
+          <option>Darasa la V</option>
+          <option>Darasa la VI</option>
+          <option>Darasa la VII</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Shule</label>
+        <select id="schoolName" required>
+          <option value="">Chagua shule</option>
+          <option>Farm Nyamwezi</option>
+          <option>Kipera</option>
+          <option>Itema</option>
+          <option>IYOMBO</option>
+        </select>
+      </div>
+
+      <button class="primary" type="submit">
+        Sajili Mwanafunzi
+      </button>
+
+    </form>
+  </section>
+
+  <!-- STUDENTS -->
+  <section id="students" class="section">
+    <h2>Orodha ya Wanafunzi</h2>
+
+    <input
+      class="search"
+      id="studentSearch"
+      placeholder="Tafuta jina au namba..."
+      onkeyup="displayStudents()"
+    >
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jina</th>
+            <th>Namba</th>
+            <th>Darasa</th>
+            <th>Shule</th>
+            <th>Hatua</th>
+          </tr>
+        </thead>
+
+        <tbody id="studentTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MARKS -->
+  <section id="marks" class="section">
+    <h2>Ingiza Alama</h2>
+
+    <form onsubmit="saveMarks(event)">
+
+      <div>
+        <label>Mwanafunzi</label>
+        <select id="markStudent" required></select>
+      </div>
+
+      <div>
+        <label>Hisabati</label>
+        <input type="number" id="math" min="0" max="100" required>
+      </div>
+
+      <div>
+        <label>Kiingereza</label>
+        <input type="number" id="english" min="0" max="100" required>
+      </div>
+
+      <div>
+        <label>Kiswahili</label>
+        <input type="number" id="swahili" min="0" max="100" required>
+      </div>
+
+      <div>
+        <label>Sayansi</label>
+        <input type="number" id="science" min="0" max="100" required>
+      </div>
+
+      <div>
+        <label>Maarifa ya Jamii</label>
+        <input type="number" id="social" min="0" max="100" required>
+      </div>
+
+      <button class="primary" type="submit">
+        Hifadhi Alama
+      </button>
+
+    </form>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="section">
+    <h2>Matokeo</h2>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Mwanafunzi</th>
+            <th>Hisabati</th>
+            <th>English</th>
+            <th>Kiswahili</th>
+            <th>Sayansi</th>
+            <th>Maarifa</th>
+            <th>Jumla</th>
+            <th>Wastani</th>
+            <th>Daraja</th>
+          </tr>
+        </thead>
+
+        <tbody id="resultsTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>© 2026 EduScore Tumbi</p>
+</footer>
+
+<script>
+
+let students = JSON.parse(localStorage.getItem("students")) || [];
+
+let marks = JSON.parse(localStorage.getItem("marks")) || {};
+
+function saveData() {
+  localStorage.setItem("students", JSON.stringify(students));
+  localStorage.setItem("marks", JSON.stringify(marks));
+}
+
+function showSection(id) {
+
+  document.querySelectorAll(".section")
+    .forEach(section => section.classList.remove("active"));
+
+  document.getElementById(id).classList.add("active");
+
+  if(id === "students") displayStudents();
+
+  if(id === "marks") loadStudentOptions();
+
+  if(id === "results") displayResults();
+
+  updateDashboard();
+}
+
+function addStudent(event) {
+
+  event.preventDefault();
+
+  const student = {
+    id: Date.now(),
+    name: document.getElementById("studentName").value.trim(),
+    exam: document.getElementById("examNumber").value.trim(),
+    className: document.getElementById("className").value,
+    school: document.getElementById("schoolName").value
+  };
+
+  students.push(student);
+
+  saveData();
+
+  alert("Mwanafunzi amesajiliwa vizuri.");
+
+  event.target.reset();
+
+  updateDashboard();
+}
+
+function displayStudents() {
+
+  const table = document.getElementById("studentTable");
+
+  const search =
+    document.getElementById("studentSearch")?.value
+    .toLowerCase() || "";
+
+  table.innerHTML = "";
+
+  students
+    .filter(s =>
+      s.name.toLowerCase().includes(search) ||
+      s.exam.toLowerCase().includes(search)
+    )
+    .forEach((student, index) => {
+
+      table.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${student.name}</td>
+          <td>${student.exam}</td>
+          <td>${student.className}</td>
+          <td>${student.school}</td>
+          <td>
+            <button class="danger"
+              onclick="deleteStudent(${student.id})">
+              Futa
+            </button>
+          </td>
+        </tr>
+      `;
+
+    });
+}
+
+function deleteStudent(id) {
+
+  if(!confirm("Una uhakika unataka kumfuta mwanafunzi huyu?")) {
+    return;
+  }
+
+  students = students.filter(s => s.id !== id);
+
+  delete marks[id];
+
+  saveData();
+
+  displayStudents();
+  updateDashboard();
+}
+
+function loadStudentOptions() {
+
+  const select = document.getElementById("markStudent");
+
+  select.innerHTML =
+    '<option value="">Chagua mwanafunzi</option>';
+
+  students.forEach(student => {
+
+    select.innerHTML += `
+      <option value="${student.id}">
+        ${student.name} - ${student.exam}
+      </option>
+    `;
+
+  });
+}
+
+function saveMarks(event) {
+
+  event.preventDefault();
+
+  const id =
+    document.getElementById("markStudent").value;
+
+  if(!id) {
+    alert("Chagua mwanafunzi.");
+    return;
+  }
+
+  marks[id] = {
+
+    math: Number(document.getElementById("math").value),
+
+    english: Number(document.getElementById("english").value),
+
+    swahili: Number(document.getElementById("swahili").value),
+
+    science: Number(document.getElementById("science").value),
+
+    social: Number(document.getElementById("social").value)
+
+  };
+
+  saveData();
+
+  alert("Alama zimehifadhiwa vizuri.");
+
+  event.target.reset();
+
+  updateDashboard();
+}
+
+function getGrade(average) {
+
+  if(average >= 75) return "A";
+
+  if(average >= 60) return "B";
+
+  if(average >= 45) return "C";
+
+  if(average >= 30) return "D";
+
+  return "F";
+}
+
+function displayResults() {
+
+  const table =
+    document.getElementById("resultsTable");
+
+  table.innerHTML = "";
+
+  let position = 0;
+
+  let resultData = [];
+
+  students.forEach(student => {
+
+    const m = marks[student.id];
+
+    if(!m) return;
+
+    const total =
+      m.math +
+      m.english +
+      m.swahili +
+      m.science +
+      m.social;
+
+    const average = total / 5;
+
+    resultData.push({
+      student,
+      m,
+      total,
+      average
+    });
+
+  });
+
+  resultData.sort((a,b) => b.total - a.total);
+
+  resultData.forEach(result => {
+
+    position++;
+
+    table.innerHTML += `
+      <tr>
+        <td>${position}</td>
+
+        <td>${result.student.name}</td>
+
+        <td>${result.m.math}</td>
+
+        <td>${result.m.english}</td>
+
+        <td>${result.m.swahili}</td>
+
+        <td>${result.m.science}</td>
+
+        <td>${result.m.social}</td>
+
+        <td>${result.total}</td>
+
+        <td>${result.average.toFixed(2)}</td>
+
+        <td>${getGrade(result.average)}</td>
+      </tr>
+    `;
+
+  });
+
+}
+
+function updateDashboard() {
+
+  document.getElementById("studentCount")
+    .textContent = students.length;
+
+  document.getElementById("marksCount")
+    .textContent = Object.keys(marks).length;
+
+}
+
+updateDashboard();
+
+</script>
+
+</body>
+</html>
